@@ -46,7 +46,7 @@ if __name__ == "__main__":
             orders.pop(ord)
 #    print(couriers)
 #    print(orders)
-    template = {'courier_id': 0, 'action': 'pickup', 'order_id': 0, 'point_id': 0}
+    template = {"courier_id": 0, "action": "pickup", "order_id": 0, "point_id": 0}
     ans = []
     for ord in orders:
         point_id = 0
@@ -65,18 +65,20 @@ if __name__ == "__main__":
             elif time == time_min and dist_c(couriers, c, ords, ord) < dist_c(couriers, courier_id, ords, ord):
                 time_min = time
                 courier_id = c
-            couriers[c].update({'time': time_out})
+            couriers[c].update({'time': time_out + time})
+            couriers[c].update({'location_x': ords[ord].get('dropoff_location_x')})
+            couriers[c].update({'location_y': ords[ord].get('dropoff_location_y')})
         if courier_id == 0:
             continue
         ans.append(template.copy())
-        ans[-1].update({'courier_id': courier_id})
-        ans[-1].update({'action': 'pickup'})
-        ans[-1].update({'order_id': ord})
-        ans[-1].update({'point_id': ords[ord].get('pickup_point_id')})
+        ans[-1].update({"courier_id": courier_id})
+        ans[-1].update({"action": "pickup"})
+        ans[-1].update({"order_id": ord})
+        ans[-1].update({"point_id": ords[ord].get("pickup_point_id")})
         ans.append(template.copy())
-        ans[-1].update({'courier_id': courier_id})
-        ans[-1].update({'action': 'dropoff'})
-        ans[-1].update({'order_id': ord})
-        ans[-1].update({'point_id': ords[ord].get('dropoff_point_id')})
+        ans[-1].update({"courier_id": courier_id})
+        ans[-1].update({"action": "dropoff"})
+        ans[-1].update({"order_id": ord})
+        ans[-1].update({"point_id": ords[ord].get("dropoff_point_id")})
     with open('contest_output.json', 'w') as f:
-        f.write(str(ans))
+        f.write(json.dumps(ans))
