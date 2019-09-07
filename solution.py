@@ -53,17 +53,21 @@ if __name__ == "__main__":
         courier_id = 0
         time_min = 200000
         for c in couriers:
-            time = couriers[c].get('time') + dist_c(couriers, c, ords, ord)
-            if time > ords[ord].get('pickup_to'):
-                time = 200000
-                break
-            time += dist(ords, ord)
-            if time > ords[ord].get('dropoff_to') or time > 1439:
-                time = 200000
-                break
+            time_out = couriers[c].get('time') + dist_c(couriers, c, ords, ord)
+            if time_out > ords[ord].get('pickup_to'):
+                continue
+            if dist(ords, ord) + time_out > ords[ord].get('dropoff_to') or time_out > 1439:
+                continue
+            time = max(0, ords[ord].get('pickup_from') - time_out)
             if time < time_min:
                 time_min = time
                 courier_id = c
+            elif time == time_min and dist_c(couriers, c, ords, ord) < dist_c(couriers, courier_id, ords, ord):
+                time_min = time
+                courier_id = c
+            couriers[c].update({'time': time_out})
+        if courier_id == 0:
+            continue
         ans.append(template.copy())
         ans[-1].update({'courier_id': courier_id})
         ans[-1].update({'action': 'pickup'})
@@ -74,4 +78,5 @@ if __name__ == "__main__":
         ans[-1].update({'action': 'dropoff'})
         ans[-1].update({'order_id': ord})
         ans[-1].update({'point_id': ords[ord].get('dropoff_point_id')})
-    print(*ans)
+    with open('contest_output.json', 'w') as f:
+        f.write(str(ans))
